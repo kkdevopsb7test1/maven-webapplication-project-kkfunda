@@ -101,12 +101,11 @@
 	      <url>http://172.31.40.189:8081/repository/flipkart-release/</url>
 	    </repository>
 	    
-	    <distributionManagement>
-    <snapshotRepository>
-        <id>nexus</id>
-        <url>http://3.108.194.9:8081/repository/jio-snapshot/</url>
-    </snapshotRepository>
-</distributionManagement>
+	    <snapshotRepository>
+	      <id>nexus</id>
+	      <name>KK FUNDA Snapshot Nexus Repository </name>
+	      <url>http://3.108.194.9:8081/repository/jio-snapshot/</url>
+	    </snapshotRepository>
 
 	    
 	</distributionManagement>
