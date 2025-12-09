@@ -2,6 +2,8 @@ node {
 
     // Maven tool configured in Jenkins
     def mavenHome = tool name: "maven-3.9.8"
+echo "git branch Name: ${env.BRANCH_NAME}"
+echo "build number: ${env.BUILD_NUMBER}"
     
    try
    {  
