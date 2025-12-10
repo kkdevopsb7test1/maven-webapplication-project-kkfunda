@@ -46,10 +46,10 @@
 <body>
 
 <header>
-    <h1>Welcome to KK FUNDA DevOps & SRE Portal — Jan 25th, 2026</h1>
-    <h2>DevOps New Batch Demo at 7 PM</h2>
-    <h3>Training | Development | Consulting</h3>
+  <h1>Welcome to KK FUNDA DevOps & SRE Portal – Jan 25, 2026</h1>
+  <h3>Training | Development | Consulting</h3>
 </header>
+
 
 
 <div class="container">
