@@ -1,4 +1,4 @@
-name: Simple Build and Deploy
+name: Build and Deploy in ci
 on:
   workflow_dispatch:
 
