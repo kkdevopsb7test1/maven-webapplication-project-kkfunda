@@ -1,67 +1,53 @@
-name: Build + SonarQube + Nexus + Tomcat Deploy
-
+name: Simple Build and Deploy
 on:
   workflow_dispatch:
 
 jobs:
-  build_deploy:
+  full:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout code
       - uses: actions/checkout@v4
 
-      # Setup Java
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
           cache: maven
 
-      # --------------------------
-      # 1️⃣ Run SonarQube Analysis (USERNAME + PASSWORD)
-      # --------------------------
-      - name: SonarQube Scan
-        env:
-          SONAR_HOST: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_USERNAME: ${{ secrets.SONAR_USERNAME }}
-          SONAR_PASSWORD: ${{ secrets.SONAR_PASSWORD }}
-        run: |
-          mvn sonar:sonar \
-            -Dsonar.host.url=$SONAR_HOST \
-            -Dsonar.login=$SONAR_USERNAME \
-            -Dsonar.password=$SONAR_PASSWORD
-
-      # --------------------------
-      # 2️⃣ Build Package
-      # --------------------------
-      - name: Maven Build Package
+      - name: Build Maven Project
         run: mvn clean package
 
-      # --------------------------
-      # 3️⃣ Deploy Artifact to Nexus
-      # --------------------------
-      - name: Deploy to Nexus
+      - name: Run SonarQube Analysis
         env:
-          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          SONAR_HOST: ${{ secrets.SONAR_HOST }}
+          SONAR_USER: ${{ secrets.SONAR_USERNAME }}
+          SONAR_PASS: ${{ secrets.SONAR_PASSWORD }}
         run: |
-          mvn deploy \
-            -DskipTests=true \
-            -Dnexus.username=$NEXUS_USERNAME \
-            -Dnexus.password=$NEXUS_PASSWORD
+          mvn sonar:sonar \
+            -Dsonar.host.url="${SONAR_HOST}" \
+            -Dsonar.login="${SONAR_USER}" \
+            -Dsonar.password="${SONAR_PASS}"
 
-      # --------------------------
-      # 4️⃣ Deploy WAR to Tomcat
-      # --------------------------
-      - name: Deploy WAR to Tomcat Server
+      - name: Deploy Artifact to Nexus
         env:
-          TOMCAT_URL: ${{ secrets.TOMCAT_URL }}
-          TOMCAT_USERNAME: ${{ secrets.TOMCAT_USERNAME }}
-          TOMCAT_PASSWORD: ${{ secrets.TOMCAT_PASSWORD }}
+          NEXUS_USER: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASS: ${{ secrets.NEXUS_PASSWORD }}
+          NEXUS_URL: ${{ secrets.NEXUS_URL }}
         run: |
           WAR=$(ls target/*.war | head -n 1)
-          echo "Deploying: $WAR"
-          curl -v -u "${TOMCAT_USERNAME}:${TOMCAT_PASSWORD}" \
+
+          curl -v -u "${NEXUS_USER}:${NEXUS_PASS}" \
+            --upload-file "$WAR" \
+            "${NEXUS_URL}/repository/maven-releases/com/kkfunda/maven-web-application/1.0/maven-web-application-1.0.war"
+
+      - name: Deploy WAR to Tomcat
+        env:
+          TOMCAT_URL: ${{ secrets.TOMCAT_URL }}
+          TOMCAT_USER: ${{ secrets.TOMCAT_USERNAME }}
+          TOMCAT_PASS: ${{ secrets.TOMCAT_PASSWORD }}
+        run: |
+          WAR=$(ls target/*.war | head -n 1)
+          curl -sS -u "${TOMCAT_USER}:${TOMCAT_PASS}" \
             --upload-file "$WAR" \
             "${TOMCAT_URL}/manager/text/deploy?path=/maven-web-application&update=true"
