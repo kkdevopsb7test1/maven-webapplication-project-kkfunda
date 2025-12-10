@@ -50,8 +50,6 @@
   <h3>Training | Development | Consulting</h3>
 </header>
 
-
-
 <div class="container">
 
     <!-- Server Info -->
