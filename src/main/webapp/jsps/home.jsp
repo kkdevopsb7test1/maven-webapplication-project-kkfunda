@@ -46,7 +46,7 @@
 <body>
 
 <header>
-    <h1> Welcome to KK  DEVOPS SRE Portal New batch,Newbatch demo start jan25th,2026 at 7pm  </h1>
+    <h1> Welcome to KK  DEVOPS SRE Portal New batch </h1>
     <h3>Training | Development | Consulting</h3>
 </header>
 
