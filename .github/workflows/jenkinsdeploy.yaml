@@ -1,0 +1,67 @@
+name: Build + SonarQube + Nexus + Tomcat Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v4
+
+      # Setup Java
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      # --------------------------
+      # 1️⃣ Run SonarQube Analysis (USERNAME + PASSWORD)
+      # --------------------------
+      - name: SonarQube Scan
+        env:
+          SONAR_HOST: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_USERNAME: ${{ secrets.SONAR_USERNAME }}
+          SONAR_PASSWORD: ${{ secrets.SONAR_PASSWORD }}
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.host.url=$SONAR_HOST \
+            -Dsonar.login=$SONAR_USERNAME \
+            -Dsonar.password=$SONAR_PASSWORD
+
+      # --------------------------
+      # 2️⃣ Build Package
+      # --------------------------
+      - name: Maven Build Package
+        run: mvn clean package
+
+      # --------------------------
+      # 3️⃣ Deploy Artifact to Nexus
+      # --------------------------
+      - name: Deploy to Nexus
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        run: |
+          mvn deploy \
+            -DskipTests=true \
+            -Dnexus.username=$NEXUS_USERNAME \
+            -Dnexus.password=$NEXUS_PASSWORD
+
+      # --------------------------
+      # 4️⃣ Deploy WAR to Tomcat
+      # --------------------------
+      - name: Deploy WAR to Tomcat Server
+        env:
+          TOMCAT_URL: ${{ secrets.TOMCAT_URL }}
+          TOMCAT_USERNAME: ${{ secrets.TOMCAT_USERNAME }}
+          TOMCAT_PASSWORD: ${{ secrets.TOMCAT_PASSWORD }}
+        run: |
+          WAR=$(ls target/*.war | head -n 1)
+          echo "Deploying: $WAR"
+          curl -v -u "${TOMCAT_USERNAME}:${TOMCAT_PASSWORD}" \
+            --upload-file "$WAR" \
+            "${TOMCAT_URL}/manager/text/deploy?path=/maven-web-application&update=true"
