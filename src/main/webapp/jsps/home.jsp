@@ -46,7 +46,7 @@
 <body>
 
 <header>
-    <h1> Welcome to KK  DEVOPS SRE Portal </h1>
+    <h1>Welcome to KK FUNDA DEVOPS SRE Portal Jan25th-2026 , Devops new batch demo at 7PM</h1>
     <h3>Training | Development | Consulting</h3>
 </header>
 
