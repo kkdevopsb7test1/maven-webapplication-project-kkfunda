@@ -17,4 +17,14 @@ jobs:
 
       - run: mvn  clean package
 
+      - name: Deploy WAR to Tomcat
+        env:
+          TOMCAT_URL: ${{ secrets.TOMCAT_URL }}
+          TOMCAT_USER: ${{ secrets.TOMCAT_USERNAME }}
+          TOMCAT_PASS: ${{ secrets.TOMCAT_PASSWORD }}
+        run: |
+          WAR=$(ls target/*.war | head -n 1)
+          curl -sS -u "${TOMCAT_USER}:${TOMCAT_PASS}" --upload-file "$WAR" "${TOMCAT_URL}/manager/text/deploy?path=/maven-web-application&update=true"
+
+
       
