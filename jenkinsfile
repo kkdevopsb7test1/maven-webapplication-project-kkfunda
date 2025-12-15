@@ -33,7 +33,7 @@ echo "build number: ${env.BUILD_NUMBER}"
         sh """
             curl -u venkat:password \
             --upload-file target/maven-web-application.war \
-            "http://43.204.28.248:8080/manager/text/deploy?path=/maven-web-application&update=true"
+            "http://65.0.184.6:8080/manager/text/deploy?path=/maven-web-application&update=true"
         """
     }
    }  //try block end
