@@ -53,7 +53,7 @@ pipeline
 
       curl -u venkat:password \
 --upload-file /var/lib/jenkins/workspace/jio-Declarative-pl-dev/target/maven-web-application.war \
-"http://65.0.184.6:8080/manager/text/deploy?path=/maven-web-application&update=true"
+"http://13.232.229.174:8080/manager/text/deploy?path=/maven-web-application&update=true"
           
         """
               }
